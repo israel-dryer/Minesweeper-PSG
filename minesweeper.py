@@ -277,9 +277,12 @@ class Game:
             slice_images(source_file, file_name, dest_folder)
             sg.popup_quick_message('Preparing new image...')
         
-        # close the existing program and start another
-        self.close()
-        play()
+            # close the existing program and start another
+            self.close()
+            play()
+
+        else:
+            return
 
     # -- other class methods ---------------------------------------------------------------------
 
