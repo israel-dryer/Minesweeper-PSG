@@ -1,3 +1,21 @@
+"""
+    ***************************
+    ** M I N E S W E E P E R **
+    ***************************
+    *** PySimpleGUI Version ***
+    ***************************
+
+    DESCRIPTION:
+    A minesweeper game that allows you to customize the tiles with a background
+    image (jpg / png). You can adjust the game difficulty by adjusting the mine density slider.
+    
+    AUTHOR:
+    Israel Dryer
+    
+    MODIFIED:
+    2020-09-19
+"""
+
 from PIL import Image
 from math import floor
 from random import sample
@@ -27,7 +45,6 @@ ICONS = {
 class Game:
     """A Minesweeper game"""
     def __init__(self):
-        
         # gameplay variables
         self.flag_count = 0
         self.mine_count = 30
@@ -50,8 +67,8 @@ class Game:
         self.mine_counter_txt = sg.Text(f'{self.mine_count:0>3}', font=('TkFixedFont', -14, 'bold'))
         
         # mine density (diffulty)
-        self.mine_density = sg.Slider(range=(20, 100), default_value=self.mine_count, orientation='h', resolution=10,
-            disable_number_display=True, enable_events=True, key='-DENSITY-')
+        self.mine_density = sg.Slider(range=(20, 100), default_value=self.mine_count,
+            orientation='h', resolution=10, disable_number_display=True, enable_events=True, key='-DENSITY-')
         
         # reset game button
         self.reset_btn = sg.Button('Reset', key='-RESET-', size=(9, 1), font=('TkFixedFont', -14))
@@ -72,9 +89,9 @@ class Game:
         self.grid = None
         self.setup_tile_grid()
 
-        # ---- window ----------------------------------------------------------------------------
-        
-        window_layout = [[self.infobar], [self.grid]] 
+        # ---- game window -----------------------------------------------------------------------
+
+        window_layout = [[self.infobar], [self.grid]]
         self.window = sg.Window('Minesweeper', window_layout, finalize=True)
 
         # tile adjustments and create lookup -----------------------------------------------------
@@ -90,12 +107,12 @@ class Game:
 
             # add tile to Tk to PSG lookup
             tk_widget = t.Widget
-            self.tk_tile_lookup[tk_widget] = t        
+            self.tk_tile_lookup[tk_widget] = t
 
     # ---- methods for setting up the tile grid --------------------------------------------------
     
     def setup_tile_grid(self):
-        """ Setup tile grid array and TkWidget lookup """
+        """Create tile grid layout and tile array"""
         grid_layout = []
         for r in range(16):
             row = []
@@ -113,7 +130,8 @@ class Game:
         self.tile_array = self.tile_array.reshape([16, 16])
 
     def generate_mines(self, first_tile):
-        """Set random tiles as mines, excluding the first tile clicked"""
+        """Set random tiles as mines, excluding the first tile clicked; dont want the player
+        to lose on the first turn."""
         population = self.tile_array.flatten().tolist()
         population.remove(first_tile)
         self.mine_tiles = sample(population, k=self.mine_count)
@@ -238,7 +256,7 @@ class Game:
             self.reveal_mines()
             self.you_lose()
 
-        # tile is a regular tile
+        # tile is regular
         elif tile.mine_neighbors == 0:
             tile.update(image_filename=ICONS['clear'], button_color=('white', 'lightgray'))
             tile.Widget.config(relief='sunken', overrelief='')
@@ -280,7 +298,6 @@ class Game:
             # close the existing program and start another
             self.close()
             play()
-
         else:
             return
 
@@ -344,6 +361,7 @@ class Tile(sg.Button):
         tile.save(self.temp_file)
         self.image_flag = self.temp_file
 
+#-- general application functions ----------------------------------------------------------------
 
 def play():
     """Create and run the game"""
@@ -379,7 +397,6 @@ def play():
 
         game.update_game_timer()
 
-
 def slice_images(source_image, dest_prefix, folder):
     """Transform image into slices for Minesweeper board and save to local drive"""
     im = Image.open(source_image)
@@ -413,11 +430,7 @@ def slice_images(source_image, dest_prefix, folder):
             im_slice.save(filename)
             file_cnt += 1
 
-                   
-
 if __name__ == '__main__':
 
     # start the program
     play()
-
-
